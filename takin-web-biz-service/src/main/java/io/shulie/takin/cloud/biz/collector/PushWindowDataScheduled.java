@@ -1,68 +1,66 @@
 package io.shulie.takin.cloud.biz.collector;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.function.Consumer;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.text.CharSequenceUtil;
-
+import io.shulie.takin.cloud.biz.collector.collector.AbstractIndicators;
+import io.shulie.takin.cloud.biz.output.scene.manage.SceneManageWrapperOutput;
+import io.shulie.takin.cloud.biz.output.statistics.PressureOutput;
+import io.shulie.takin.cloud.biz.output.statistics.RtDataOutput;
+import io.shulie.takin.cloud.biz.utils.DataUtils;
+import io.shulie.takin.cloud.biz.utils.Executors;
+import io.shulie.takin.cloud.common.bean.collector.ResponseMetrics;
+import io.shulie.takin.cloud.common.bean.scenemanage.UpdateStatusBean;
+import io.shulie.takin.cloud.common.constants.CollectorConstants;
+import io.shulie.takin.cloud.common.constants.ScheduleConstants;
+import io.shulie.takin.cloud.common.enums.PressureSceneEnum;
+import io.shulie.takin.cloud.common.enums.scenemanage.SceneManageStatusEnum;
+import io.shulie.takin.cloud.common.exception.TakinCloudException;
+import io.shulie.takin.cloud.common.exception.TakinCloudExceptionEnum;
+import io.shulie.takin.cloud.common.influxdb.InfluxUtil;
+import io.shulie.takin.cloud.common.influxdb.InfluxWriter;
+import io.shulie.takin.cloud.common.utils.CollectorUtil;
+import io.shulie.takin.cloud.common.utils.CommonUtil;
+import io.shulie.takin.cloud.common.utils.JmxUtil;
+import io.shulie.takin.cloud.common.utils.JsonUtil;
+import io.shulie.takin.cloud.common.utils.NumberUtil;
+import io.shulie.takin.cloud.data.dao.report.ReportDao;
+import io.shulie.takin.cloud.data.param.report.ReportQueryParam;
+import io.shulie.takin.cloud.data.param.report.ReportQueryParam.PressureTypeRelation;
+import io.shulie.takin.cloud.data.result.report.ReportResult;
+import io.shulie.takin.cloud.ext.content.enums.NodeTypeEnum;
+import io.shulie.takin.cloud.ext.content.script.ScriptNode;
+import io.shulie.takin.utils.json.JsonHelper;
+import io.shulie.takin.web.common.enums.ContextSourceEnum;
+import io.shulie.takin.web.ext.entity.tenant.TenantCommonExt;
+import io.shulie.takin.web.ext.entity.tenant.TenantInfoExt;
+import io.shulie.takin.web.ext.util.WebPluginUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.jdbc.SQL;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
+import org.apache.ibatis.jdbc.SQL;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.data.redis.connection.RedisConnection;
-
-import io.shulie.takin.utils.json.JsonHelper;
-import io.shulie.takin.cloud.biz.utils.DataUtils;
-import io.shulie.takin.cloud.biz.utils.Executors;
-import io.shulie.takin.cloud.common.utils.JmxUtil;
-import io.shulie.takin.web.ext.util.WebPluginUtils;
-import io.shulie.takin.cloud.common.utils.JsonUtil;
-import io.shulie.takin.cloud.common.utils.CommonUtil;
-import io.shulie.takin.cloud.common.utils.NumberUtil;
-import io.shulie.takin.cloud.data.dao.report.ReportDao;
-import io.shulie.takin.cloud.common.utils.CollectorUtil;
-import io.shulie.takin.cloud.common.influxdb.InfluxUtil;
-import io.shulie.takin.cloud.common.influxdb.InfluxWriter;
-import io.shulie.takin.web.common.enums.ContextSourceEnum;
-import io.shulie.takin.web.ext.entity.tenant.TenantInfoExt;
-import io.shulie.takin.cloud.ext.content.script.ScriptNode;
-import io.shulie.takin.cloud.ext.content.enums.NodeTypeEnum;
-import io.shulie.takin.cloud.common.enums.PressureSceneEnum;
-import io.shulie.takin.web.ext.entity.tenant.TenantCommonExt;
-import io.shulie.takin.cloud.data.result.report.ReportResult;
-import io.shulie.takin.cloud.common.constants.ScheduleConstants;
-import io.shulie.takin.cloud.data.param.report.ReportQueryParam;
-import io.shulie.takin.cloud.biz.output.statistics.RtDataOutput;
-import io.shulie.takin.cloud.common.constants.CollectorConstants;
-import io.shulie.takin.cloud.common.exception.TakinCloudException;
-import io.shulie.takin.cloud.biz.output.statistics.PressureOutput;
-import io.shulie.takin.cloud.common.bean.collector.ResponseMetrics;
-import io.shulie.takin.cloud.common.bean.scenemanage.UpdateStatusBean;
-import io.shulie.takin.cloud.common.exception.TakinCloudExceptionEnum;
-import io.shulie.takin.cloud.biz.collector.collector.AbstractIndicators;
-import io.shulie.takin.cloud.common.enums.scenemanage.SceneManageStatusEnum;
-import io.shulie.takin.cloud.biz.output.scene.manage.SceneManageWrapperOutput;
-import io.shulie.takin.cloud.data.param.report.ReportQueryParam.PressureTypeRelation;
+import org.springframework.stereotype.Component;
 
 /**
  * @author <a href="tangyuhan@shulie.io">yuhan.tang</a>
@@ -681,8 +679,7 @@ public class PushWindowDataScheduled extends AbstractIndicators {
 
                 if (!dataCalibration && null != r.getEndTime() && timeWindow >= r.getEndTime().getTime()) {
                     // 更新压测场景状态  压测引擎运行中,压测引擎停止压测 ---->压测引擎停止压测
-                    cloudSceneManageService.updateSceneLifeCycle(UpdateStatusBean.build(sceneId, reportId,
-                            customerId)
+                    cloudSceneManageService.updateSceneLifeCycle(UpdateStatusBean.build(sceneId, reportId, customerId)
                         .checkEnum(SceneManageStatusEnum.ENGINE_RUNNING, SceneManageStatusEnum.STOP)
                         .updateEnum(SceneManageStatusEnum.STOP)
                         .build());
