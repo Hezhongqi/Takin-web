@@ -84,6 +84,12 @@ public enum TakinWebExceptionEnum implements ExceptionReadable {
     AGENT_UPDATE_AGENT_VERSION_UPDATE_ERROR("0504-" + ErrorConstant.UPDATE_ERROR, "Agent 更新 agent 版本, 更新错误"),
     AGENT_UPLOAD_TRACE_VALIDATE_ERROR("0505-" + ErrorConstant.VALIDATE_ERROR, "Agent 上传 trace 相关, 校验错误"),
 
+
+    /**
+     * 探针配置更新
+     */
+    AGENT_CONFIG_CLIENT_QUERY_ERROR("0505-"+ErrorConstant.QUERY_ERROR,"探针配置查询错误"),
+
     /**
      * 链路梳理
      */
@@ -181,9 +187,9 @@ public enum TakinWebExceptionEnum implements ExceptionReadable {
      */
     DATA_SIGN_ERROR("19800-" + ErrorConstant.DATA_SIGN_ERROR, "数据签名异常"),
 
-	DATA_SIGN_CLEAR_ERROR("19800-" + ErrorConstant.DATA_SIGN_ERROR, "数据正在清理中,暂时无法开启"),
+    DATA_SIGN_CLEAR_ERROR("19800-" + ErrorConstant.DATA_SIGN_ERROR, "数据正在清理中,暂时无法开启"),
 
-	/**
+    /**
      * 接口压测
      */
     INTERFACE_PERFORMANCE_PARAM_ERROR("1900-" + ErrorConstant.DELETE_ERROR, "接口压测删除异常"),
@@ -196,6 +202,14 @@ public enum TakinWebExceptionEnum implements ExceptionReadable {
     INTERFACE_PERFORMANCE_SCRIPT_CREATE_ERROR("1907-" + ErrorConstant.ADD_ERROR, "生成脚本异常"),
     INTERFACE_PERFORMANCE_SCENE_OP_ERROR("1908-" + ErrorConstant.ADD_ERROR, "场景操作异常"),
 
+    /**
+     * 压测资源
+     */
+    PRESSURE_RESOURCE_OP_ERROR("1909-" + ErrorConstant.UPDATE_ERROR, "操作异常"),
+    PRESSURE_RESOURCE_QUERY_ERROR("1910-" + ErrorConstant.QUERY_ERROR, "查询异常"),
+    PRESSURE_RESOURCE_CONFIG_FILE_VALIDATE_ERROR("1911-" + ErrorConstant.FILE_VALIDATE_ERROR, "配置文件校验异常"),
+
+    NACOS_PUSH_ERROR("2000-" + ErrorConstant.UPDATE_ERROR, "nacos推送异常");
     ;
     private final String errorCode;
 

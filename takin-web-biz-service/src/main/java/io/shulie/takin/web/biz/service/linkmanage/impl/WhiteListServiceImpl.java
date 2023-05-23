@@ -569,7 +569,7 @@ public class WhiteListServiceImpl implements WhiteListService {
         List<String> existWhite = getExistWhite(armdString, Lists.newArrayList());
 
         for (WhiteListVO dto : resList) {
-            List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
+            List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
             if (dto.getIsDbValue()) {
                 if (CollectionUtils.isEmpty(allowUpdateUserIdList)) {
                     //管理员
@@ -594,7 +594,7 @@ public class WhiteListServiceImpl implements WhiteListService {
 
             // 补充标签
             dto.setTags(getTags(existWhite, dto));
-            List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
+            List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
             if (dto.getIsDbValue()) {
                 if (CollectionUtils.isEmpty(allowDeleteUserIdList)) {
                     dto.setCanRemove(true);
@@ -609,7 +609,7 @@ public class WhiteListServiceImpl implements WhiteListService {
                 dto.setCanRemove(false);
             }
 
-            List<Long> allowEnableDisableUserIdList = WebPluginUtils.getEnableDisableAllowUserIdList();
+            List<Long> allowEnableDisableUserIdList = WebPluginUtils.enableDisableAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowEnableDisableUserIdList)) {
                 dto.setCanEnableDisable(allowEnableDisableUserIdList.contains(dto.getUserId()));
             }

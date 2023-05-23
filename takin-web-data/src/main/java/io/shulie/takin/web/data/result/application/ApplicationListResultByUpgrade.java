@@ -1,8 +1,8 @@
 package io.shulie.takin.web.data.result.application;
 
-import lombok.Data;
-
 import java.util.Date;
+
+import lombok.Data;
 
 @Data
 public class ApplicationListResultByUpgrade {
@@ -20,4 +20,5 @@ public class ApplicationListResultByUpgrade {
 
     private Integer nodeNum;
 
+    private Long deptId;
 }

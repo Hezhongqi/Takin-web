@@ -1,11 +1,11 @@
 package io.shulie.takin.web.biz.pojo.output.report;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Data
 @ApiModel("压测报告RT比对")
@@ -68,4 +68,5 @@ public class ReportCompareRtOutput implements Serializable {
     public BigDecimal getRt99() {
         return rt99 != null ? rt99.setScale(2, BigDecimal.ROUND_HALF_UP) : null;
     }
+
 }

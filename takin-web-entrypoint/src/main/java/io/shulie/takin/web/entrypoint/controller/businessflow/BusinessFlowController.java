@@ -1,5 +1,13 @@
 package io.shulie.takin.web.entrypoint.controller.businessflow;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import io.shulie.takin.cloud.common.utils.JsonUtil;
 import io.shulie.takin.common.beans.annotation.ActionTypeEnum;
 import io.shulie.takin.common.beans.annotation.AuthVerification;
@@ -9,7 +17,12 @@ import io.shulie.takin.common.beans.response.ResponseResult;
 import io.shulie.takin.web.biz.constant.BizOpConstants;
 import io.shulie.takin.web.biz.constant.BizOpConstants.Vars;
 import io.shulie.takin.web.biz.pojo.request.filemanage.FileManageUpdateRequest;
-import io.shulie.takin.web.biz.pojo.request.linkmanage.*;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.BusinessFlowAutoMatchRequest;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.BusinessFlowDataFileRequest;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.BusinessFlowPageQueryRequest;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.BusinessFlowParseRequest;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.BusinessFlowUpdateRequest;
+import io.shulie.takin.web.biz.pojo.request.linkmanage.SceneLinkRelateRequest;
 import io.shulie.takin.web.biz.pojo.request.scriptmanage.PluginConfigCreateRequest;
 import io.shulie.takin.web.biz.pojo.response.linkmanage.BusinessFlowDetailResponse;
 import io.shulie.takin.web.biz.pojo.response.linkmanage.BusinessFlowListResponse;
@@ -24,14 +37,12 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.Resource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author 赵勇
@@ -209,11 +220,12 @@ public class BusinessFlowController {
         moduleCode = BizOpConstants.ModuleCode.BUSINESS_PROCESS,
         needAuth = ActionTypeEnum.QUERY
     )
-    public PagingList<BusinessFlowListResponse> getBusinessFlowList(@ApiParam("业务流程名称") String businessFlowName, Integer current, Integer pageSize) {
+    public PagingList<BusinessFlowListResponse> getBusinessFlowList(@ApiParam("业务流程名称") String businessFlowName, @ApiParam("部门id") Long deptId, Integer current, Integer pageSize) {
         BusinessFlowPageQueryRequest queryRequest = new BusinessFlowPageQueryRequest();
         queryRequest.setCurrentPage(current);
         queryRequest.setPageSize(pageSize);
         queryRequest.setBusinessFlowName(businessFlowName);
+        queryRequest.setDeptId(deptId);
         return sceneService.getBusinessFlowList(queryRequest);
     }
 

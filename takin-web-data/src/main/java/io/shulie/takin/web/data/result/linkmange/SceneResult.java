@@ -1,9 +1,8 @@
 package io.shulie.takin.web.data.result.linkmange;
 
-import lombok.Data;
-
-import java.time.LocalDateTime;
 import java.util.Date;
+
+import lombok.Data;
 
 /**
  * @author fanxx
@@ -78,4 +77,6 @@ public class SceneResult {
     private Integer totalNodeNum;
 
     private String features;
+
+    private Long deptId;
 }

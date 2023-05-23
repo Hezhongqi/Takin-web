@@ -10,39 +10,26 @@ import io.shulie.takin.plugin.framework.core.extension.ExtensionPoint;
  * 数据权限，用于控制数据模块的权限
  */
 public interface WebDataAuthExtApi extends ExtensionPoint {
-    /**
-     * 获取查询权限用户
-     * todo 后续废弃
-     *
-     * @return
-     */
-    List<Long> getQueryAllowUserIdList();
 
     /**
-     * 获取更新权限用户
-     * todo 后续废弃
-     *
+     * 相关操作允许的用户id
      * @return
      */
-    List<Long> getUpdateAllowUserIdList();
+    List<Long> queryAllowUserIdList();
+    List<Long> updateAllowUserIdList();
+    List<Long> deleteAllowUserIdList();
+    List<Long> enableDisableAllowUserIdList();
+    List<Long> startStopAllowUserIdList();
+    List<Long> downloadAllowUserIdList();
 
     /**
-     * 获取删除权限用户
-     * todo 后续废弃
-     *
+     * 相关操作允许的部门id
      * @return
      */
-    List<Long> getDeleteAllowUserIdList();
-
-    /**
-     * 获取启动关闭权限用户
-     * todo 后续废弃
-     *
-     * @return
-     */
-    List<Long> getEnableDisableAllowUserIdList();
-
-    List<Long> getDownloadAllowUserIdList();
-
-    List<Long> getStartStopAllowUserIdList();
+    List<Long> queryAllowDeptIdList();
+    List<Long> updateAllowDeptIdList();
+    List<Long> deleteAllowDeptIdList();
+    List<Long> enableDisableAllowDeptIdList();
+    List<Long> startStopAllowDeptIdList();
+    List<Long> downloadAllowDeptIdList();
 }

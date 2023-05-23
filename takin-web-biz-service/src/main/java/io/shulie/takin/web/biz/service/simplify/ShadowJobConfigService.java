@@ -20,6 +20,8 @@ import io.shulie.takin.web.biz.service.ApplicationService;
 import io.shulie.takin.web.biz.utils.Estimate;
 import io.shulie.takin.web.biz.utils.XmlUtil;
 import io.shulie.takin.web.common.common.Response;
+import io.shulie.takin.web.common.exception.TakinWebException;
+import io.shulie.takin.web.common.exception.TakinWebExceptionEnum;
 import io.shulie.takin.web.data.dao.application.ApplicationDAO;
 import io.shulie.takin.web.data.dao.application.ApplicationShadowJobDAO;
 import io.shulie.takin.web.data.param.application.ShadowJobCreateParam;
@@ -212,7 +214,11 @@ public class ShadowJobConfigService {
         if (StringUtils.isBlank(query.getOrderBy())) {
             query.setOrderBy("id desc");
         }
-        query.setUserIds(WebPluginUtils.getQueryAllowUserIdList());
+        ApplicationDetailResult applicationById = applicationDAO.getApplicationById(query.getApplicationId());
+        if (applicationById == null){
+            throw new TakinWebException(TakinWebExceptionEnum.APPLICATION_MANAGE_NO_EXIST_ERROR, "当前应用不存在");
+        }
+        query.setUserIds(WebPluginUtils.queryAllowUserIdList());
         List<TShadowJobConfig> tShadowJobConfigs = tShadowJobConfigMapper.selectList(query);
         PageInfo<TShadowJobConfig> pageInfo = new PageInfo<>(tShadowJobConfigs);
         List<ShadowJobConfigVo> configVos = new ArrayList<>();
@@ -229,18 +235,19 @@ public class ShadowJobConfigService {
             vo.setActive(tShadowJobConfig.getActive());
             vo.setUpdateTime(tShadowJobConfig.getUpdateTime());
             vo.setRemark(tShadowJobConfig.getRemark());
-            List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
+            List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowUpdateUserIdList)) {
                 vo.setCanEdit(allowUpdateUserIdList.contains(tShadowJobConfig.getUserId()));
             }
-            List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
+            List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowDeleteUserIdList)) {
                 vo.setCanRemove(allowDeleteUserIdList.contains(tShadowJobConfig.getUserId()));
             }
-            List<Long> allowEnableDisableUserIdList = WebPluginUtils.getEnableDisableAllowUserIdList();
+            List<Long> allowEnableDisableUserIdList = WebPluginUtils.enableDisableAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowEnableDisableUserIdList)) {
                 vo.setCanEnableDisable(allowEnableDisableUserIdList.contains(tShadowJobConfig.getUserId()));
             }
+            vo.setDeptId(applicationById.getDeptId());
             vo.setUserId(tShadowJobConfig.getUserId());
             WebPluginUtils.fillQueryResponse(vo);
             configVos.add(vo);
@@ -260,7 +267,7 @@ public class ShadowJobConfigService {
             query.setOrderBy("id desc");
         }
         query.setApplicationId(tApplicationMnt.getApplicationId());
-        query.setUserIds(WebPluginUtils.getQueryAllowUserIdList());
+        query.setUserIds(WebPluginUtils.queryAllowUserIdList());
         List<TShadowJobConfig> tShadowJobConfigs = tShadowJobConfigMapper.selectList(query);
         try {
             for (TShadowJobConfig tShadowJobConfig : tShadowJobConfigs) {

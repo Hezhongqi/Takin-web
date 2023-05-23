@@ -2,8 +2,6 @@ package io.shulie.takin.web.biz.pojo.request.activity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.shulie.takin.common.beans.page.PagingDevice;
-import io.shulie.takin.web.common.annocation.Trimmed;
-import io.shulie.takin.web.common.annocation.Trimmed.TrimmerType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,4 +29,7 @@ public class ActivityQueryRequest extends PagingDevice {
 
     @ApiModelProperty(name= "type",value = "正常、虚拟:0:正常：1虚拟")
     private Integer type;
+
+    @ApiModelProperty("部门id")
+    private Long deptId;
 }

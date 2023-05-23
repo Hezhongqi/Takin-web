@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -11,25 +12,10 @@ import javax.annotation.Resource;
 import com.alibaba.fastjson.JSON;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.alibaba.fastjson.TypeReference;
 import com.github.pagehelper.PageInfo;
 import com.pamirs.takin.cloud.entity.domain.dto.report.BusinessActivityDTO;
 import com.pamirs.takin.cloud.entity.domain.dto.report.CloudReportDTO;
 import com.pamirs.takin.cloud.entity.domain.dto.report.Metrices;
-import io.shulie.takin.adapter.api.constant.EntrypointUrl;
-import io.shulie.takin.adapter.api.model.request.scenemanage.ReportActivityResp;
-import io.shulie.takin.adapter.api.model.request.scenemanage.ReportDetailByIdsReq;
-import io.shulie.takin.cloud.biz.input.report.UpdateReportConclusionInput;
-import io.shulie.takin.cloud.biz.input.report.WarnCreateInput;
-import io.shulie.takin.cloud.biz.output.report.ReportDetailOutput;
-import io.shulie.takin.cloud.biz.output.scene.manage.WarnDetailOutput;
-import io.shulie.takin.cloud.biz.service.report.CloudReportService;
-import io.shulie.takin.cloud.common.exception.TakinCloudException;
-import io.shulie.takin.cloud.common.exception.TakinCloudExceptionEnum;
-import io.shulie.takin.web.common.util.RedisClientUtil;
-import io.shulie.takin.cloud.ext.content.trace.ContextExt;
-import io.shulie.takin.common.beans.response.ResponseResult;
-import io.shulie.takin.adapter.cloud.convert.WarnDetailRespConvertor;
 import io.shulie.takin.adapter.api.entrypoint.report.CloudReportApi;
 import io.shulie.takin.adapter.api.model.request.WarnQueryParam;
 import io.shulie.takin.adapter.api.model.request.common.CloudCommonInfoWrapperReq;
@@ -43,6 +29,8 @@ import io.shulie.takin.adapter.api.model.request.report.TrendRequest;
 import io.shulie.takin.adapter.api.model.request.report.UpdateReportConclusionReq;
 import io.shulie.takin.adapter.api.model.request.report.WarnCreateReq;
 import io.shulie.takin.adapter.api.model.request.report.WarnQueryReq;
+import io.shulie.takin.adapter.api.model.request.scenemanage.ReportActivityResp;
+import io.shulie.takin.adapter.api.model.request.scenemanage.ReportDetailByIdsReq;
 import io.shulie.takin.adapter.api.model.response.report.ActivityResponse;
 import io.shulie.takin.adapter.api.model.response.report.MetricesResponse;
 import io.shulie.takin.adapter.api.model.response.report.NodeTreeSummaryResp;
@@ -51,6 +39,17 @@ import io.shulie.takin.adapter.api.model.response.report.ReportResp;
 import io.shulie.takin.adapter.api.model.response.report.ReportTrendResp;
 import io.shulie.takin.adapter.api.model.response.report.ScriptNodeTreeResp;
 import io.shulie.takin.adapter.api.model.response.scenemanage.WarnDetailResponse;
+import io.shulie.takin.adapter.cloud.convert.WarnDetailRespConvertor;
+import io.shulie.takin.cloud.biz.input.report.UpdateReportConclusionInput;
+import io.shulie.takin.cloud.biz.input.report.WarnCreateInput;
+import io.shulie.takin.cloud.biz.output.report.ReportDetailOutput;
+import io.shulie.takin.cloud.biz.output.scene.manage.WarnDetailOutput;
+import io.shulie.takin.cloud.biz.service.report.CloudReportService;
+import io.shulie.takin.cloud.common.exception.TakinCloudException;
+import io.shulie.takin.cloud.common.exception.TakinCloudExceptionEnum;
+import io.shulie.takin.cloud.ext.content.trace.ContextExt;
+import io.shulie.takin.common.beans.response.ResponseResult;
+import io.shulie.takin.web.common.util.RedisClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -133,6 +132,7 @@ public class CloudReportApiImpl implements CloudReportApi {
             } else {
                 data = cloudReportService.queryReportTrend(req);
                 redisClientUtil.setString(key, JSON.toJSONString(data));
+                redisClientUtil.expire(key, 2, TimeUnit.MINUTES);
             }
             return data;
         } catch (Exception e) {

@@ -352,8 +352,8 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
     }
 
     @Override
-    public List<ApplicationDetailResult> getApplicationsByUserIdList(List<Long> userIdList) {
-        return applicationDAO.getApplicationListByUserIds(userIdList);
+    public List<ApplicationDetailResult> getApplicationsByUserIdList(List<Long> userIdList, List<Long> deptIdList) {
+        return applicationDAO.getApplicationListByUserIds(userIdList, deptIdList);
     }
 
     //3.添加定时任务
@@ -620,6 +620,7 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
                 Collections.singletonList(tApplicationMnt.getApplicationName()));
         ApplicationResult applicationResult = CollectionUtils.isEmpty(applicationResultList)
                 ? null : applicationResultList.get(0);
+
         // 取应用节点版本信息
         ApplicationNodeQueryParam queryParam = new ApplicationNodeQueryParam();
         queryParam.setCurrent(0);
@@ -1036,9 +1037,10 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
 
     @Override
     public List<String> getApplicationName() {
-        List<Long> userIdList = WebPluginUtils.getQueryAllowUserIdList();
+        List<Long> userIdList = WebPluginUtils.queryAllowUserIdList();
+        List<Long> deptIdList = WebPluginUtils.queryAllowDeptIdList();
         List<ApplicationDetailResult> applicationDetailResultList = applicationDAO.getApplicationListByUserIds(
-                userIdList);
+                userIdList, deptIdList);
         if (CollectionUtils.isEmpty(applicationDetailResultList)) {
             return Lists.newArrayList();
         }
@@ -1441,7 +1443,8 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
         QueryApplicationParam queryApplicationParam = BeanUtil.copyProperties(request, QueryApplicationParam.class);
         queryApplicationParam.setTenantId(WebPluginUtils.traceTenantId());
         queryApplicationParam.setEnvCode(WebPluginUtils.traceEnvCode());
-        queryApplicationParam.setUserIds(WebPluginUtils.getQueryAllowUserIdList());
+        queryApplicationParam.setUserIds(WebPluginUtils.queryAllowUserIdList());
+        queryApplicationParam.setDeptIds(WebPluginUtils.queryAllowDeptIdList());
         queryApplicationParam.setUpdateStartTime(request.getUpdateStartTime());
         queryApplicationParam.setUpdateEndTime(request.getUpdateEndTime());
         IPage<ApplicationListResult> applicationListResultPage = applicationDAO.pageByParam(queryApplicationParam);
@@ -1449,9 +1452,7 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
         if (org.springframework.util.CollectionUtils.isEmpty(applicationListResultPage.getRecords())) {
             return PagingList.empty();
         }
-        /**
-         * foreach查询使用线程池，异步去处理
-         */
+
         List<ApplicationListResult> records = applicationListResultPage.getRecords();
         List<ApplicationListResponseV2> responseList = new ArrayList<>();
         CountDownLatch countDownLatch = new CountDownLatch(records.size());
@@ -1475,7 +1476,8 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
         QueryApplicationByUpgradeParam param = BeanUtil.copyProperties(request, QueryApplicationByUpgradeParam.class);
         param.setTenantId(WebPluginUtils.traceTenantId());
         param.setEnvCode(WebPluginUtils.traceEnvCode());
-        param.setUserIds(WebPluginUtils.getQueryAllowUserIdList());
+        param.setUserIds(WebPluginUtils.queryAllowUserIdList());
+        param.setDeptIds(WebPluginUtils.queryAllowDeptIdList());
         IPage<ApplicationListResultByUpgrade> applicationList = applicationDAO.getApplicationList(param);
         if (applicationList.getTotal() == 0) {
             return PagingList.empty();
@@ -2730,6 +2732,7 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
             vo.setExceptionInfo(exceptionMsg);
         }
         vo.setUserId(param.getUserId());
+        vo.setDeptId(param.getDeptId());
         WebPluginUtils.fillQueryResponse(vo);
         return vo;
     }
@@ -2857,6 +2860,7 @@ public class ApplicationServiceImpl implements ApplicationService, WhiteListCons
             result.setSwitchStatus(getUserSilenceSwitchStatusForVo(WebPluginUtils.traceTenantCommonExt()));
         }
         result.setUserId(WebPluginUtils.traceUserId());
+        result.setDeptId(WebPluginUtils.traceDeptId());
         WebPluginUtils.fillQueryResponse(result);
         return Response.success(result);
     }

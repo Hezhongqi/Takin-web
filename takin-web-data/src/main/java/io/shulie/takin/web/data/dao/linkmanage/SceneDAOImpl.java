@@ -40,12 +40,12 @@ public class SceneDAOImpl implements SceneDAO {
     private SceneMapper sceneMapper;
 
     @Override
-    public int insert(SceneCreateParam param) {
+    public Long insert(SceneCreateParam param) {
         SceneEntity entity = new SceneEntity();
         BeanUtils.copyProperties(param, entity);
-        int count = sceneMapper.insert(entity);
+        sceneMapper.insert(entity);
         param.setId(entity.getId());
-        return count;
+        return entity.getId();
     }
 
     /**
@@ -58,7 +58,7 @@ public class SceneDAOImpl implements SceneDAO {
     public int allocationUser(SceneUpdateParam param) {
         LambdaUpdateWrapper<SceneEntity> wrapper = new LambdaUpdateWrapper();
         wrapper.set(SceneEntity::getUserId, param.getUserId())
-            .eq(SceneEntity::getId, param.getId());
+                .eq(SceneEntity::getId, param.getId());
         return sceneMapper.update(null, wrapper);
     }
 
@@ -148,11 +148,20 @@ public class SceneDAOImpl implements SceneDAO {
         if (!StringUtils.isEmpty(param.getSceneName())) {
             lambdaQueryWrapper.like(SceneEntity::getSceneName, "\\" + param.getSceneName());
         }
+        if (param.getDeptId() != null){
+            lambdaQueryWrapper.eq(SceneEntity::getDeptId, param.getDeptId());
+        }
         if (CollectionUtils.isNotEmpty(param.getUserIdList())) {
             lambdaQueryWrapper.in(SceneEntity::getUserId, param.getUserIdList());
         }
+        if (CollectionUtils.isNotEmpty(param.getDeptIdList())) {
+            lambdaQueryWrapper.in(SceneEntity::getDeptId, param.getDeptIdList());
+        }
         if (param.getIgnoreType() != null) {
             lambdaQueryWrapper.ne(SceneEntity::getType, param.getIgnoreType());
+        }
+        if (param.getQueryGmtModified() != null) {
+            lambdaQueryWrapper.ge(SceneEntity::getUpdateTime, param.getQueryGmtModified());
         }
         lambdaQueryWrapper.eq(SceneEntity::getIsDeleted, 0);
         lambdaQueryWrapper.orderByDesc(SceneEntity::getUpdateTime);

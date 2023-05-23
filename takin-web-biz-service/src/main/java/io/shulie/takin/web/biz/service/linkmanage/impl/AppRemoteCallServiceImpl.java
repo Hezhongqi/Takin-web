@@ -201,7 +201,7 @@ public class AppRemoteCallServiceImpl implements AppRemoteCallService {
         if (WebPluginUtils.validateAdmin()) {
             appRemoteCallDAO.updateListSelective(request.getType(), request.getAppIds(), null);
         } else {
-            appRemoteCallDAO.updateListSelective(request.getType(), request.getAppIds(), WebPluginUtils.getUpdateAllowUserIdList());
+            appRemoteCallDAO.updateListSelective(request.getType(), request.getAppIds(), WebPluginUtils.updateAllowUserIdList());
         }
     }
 
@@ -310,6 +310,8 @@ public class AppRemoteCallServiceImpl implements AppRemoteCallService {
             result.setTypeSelectVO(new SelectVO(entity.getName(), String.valueOf(entity.getValueOrder())));
             // 支持类型
             result.setInterfaceTypeSelectVO(getSelectVO(result.getInterfaceType(), voList));
+
+            result.setDeptId(detailResult.getDeptId());
             // 补充权限
             WebPluginUtils.fillQueryResponse(result);
         });
@@ -385,7 +387,7 @@ public class AppRemoteCallServiceImpl implements AppRemoteCallService {
      * 权限填充 用应用权限来控制
      */
     private void fillInPermissions(AppRemoteCallListVO listVO, ApplicationDetailResult detailResult) {
-        List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
+        List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
         if (CollectionUtils.isEmpty(allowUpdateUserIdList)) {
             //管理员
             listVO.setCanEdit(true);
@@ -393,13 +395,13 @@ public class AppRemoteCallServiceImpl implements AppRemoteCallService {
             //普通用户
             listVO.setCanEdit(allowUpdateUserIdList.contains(detailResult.getUserId()));
         }
-        List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
+        List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
         if (CollectionUtils.isEmpty(allowDeleteUserIdList)) {
             listVO.setCanRemove(true);
         } else {
             listVO.setCanRemove(allowDeleteUserIdList.contains(detailResult.getUserId()));
         }
-        List<Long> allowEnableDisableUserIdList = WebPluginUtils.getEnableDisableAllowUserIdList();
+        List<Long> allowEnableDisableUserIdList = WebPluginUtils.enableDisableAllowUserIdList();
         if (CollectionUtils.isNotEmpty(allowEnableDisableUserIdList)) {
             listVO.setCanEnableDisable(allowEnableDisableUserIdList.contains(detailResult.getUserId()));
         }

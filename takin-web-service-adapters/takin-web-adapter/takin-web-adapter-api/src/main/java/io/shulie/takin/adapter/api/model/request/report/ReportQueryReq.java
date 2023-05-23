@@ -1,5 +1,7 @@
 package io.shulie.takin.adapter.api.model.request.report;
 
+import java.util.List;
+
 import io.shulie.takin.cloud.ext.content.trace.PagingContextExt;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -52,4 +54,9 @@ public class ReportQueryReq extends PagingContextExt {
     @ApiModelProperty(value = "报告类型")
     private Integer type;
 
+    private Long deptId;
+
+    private List<Long> deptIds;
+
+    private List<Long> userIds;
 }

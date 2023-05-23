@@ -355,7 +355,7 @@ public class LinkManageServiceImpl implements LinkManageService {
         queryVo.setIsChange(vo.getIschange());
         queryVo.setSystemProcessName(vo.getTechLinkName());
         queryVo.setDomain(vo.getDomain());
-        List<BusinessLinkDto> queryResult = tBusinessLinkManageTableMapper.selectBussinessLinkListBySelective2(queryVo, WebPluginUtils.getQueryAllowUserIdList());
+        List<BusinessLinkDto> queryResult = tBusinessLinkManageTableMapper.selectBussinessLinkListBySelective2(queryVo, WebPluginUtils.queryAllowUserIdList());
         //用户ids
         List<Long> userIds = queryResult.stream()
             .map(BusinessLinkDto::getUserId)
@@ -558,7 +558,7 @@ public class LinkManageServiceImpl implements LinkManageService {
 
     @Override
     public Response<List<SceneDto>> getScenes(SceneQueryVo vo) {
-        List<SceneDto> sceneDtos = tSceneMapper.selectByRelatedQuery(vo, WebPluginUtils.getQueryAllowUserIdList());
+        List<SceneDto> sceneDtos = tSceneMapper.selectByRelatedQuery(vo, WebPluginUtils.queryAllowUserIdList());
         List<SceneDto> pageData = PageUtils.getPage(true, vo.getCurrentPage(), vo.getPageSize(), sceneDtos);
         if (CollectionUtils.isEmpty(sceneDtos)) {
             return Response.success(pageData, 0);
@@ -936,6 +936,7 @@ public class LinkManageServiceImpl implements LinkManageService {
         param.setIsCore(Integer.parseInt(vo.getIsCore()));
         param.setIsChanged(0);
         param.setIsDeleted(0);
+        param.setDeptId(WebPluginUtils.traceDeptId());
         sceneDAO.insert(param);
         return param.getId();
     }

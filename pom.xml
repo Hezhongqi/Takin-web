@@ -4,7 +4,7 @@
     <groupId>io.shulie.takin</groupId>
     <artifactId>takin-web</artifactId>
 
-    <version>takin-web-5.10.0</version>
+    <version>takin-web-5.10.0.hzbank</version>
     <packaging>pom</packaging>
 
     <url>https://github.com/shulieTech/Takin-web.git</url>
@@ -77,7 +77,8 @@
         <easypoi-annotation.version>4.3.0</easypoi-annotation.version>
         <openpdf.version>9.1.22</openpdf.version>
         <transmittable-thread-local>2.12.4</transmittable-thread-local>
-        <cloud.version>5.4.0.12</cloud.version>
+        <cloud.version>5.4.1.0</cloud.version>
+        <fastjson.version>1.2.83</fastjson.version>
     </properties>
 
     <modules>

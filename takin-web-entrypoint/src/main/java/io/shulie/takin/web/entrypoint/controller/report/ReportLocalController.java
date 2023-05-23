@@ -57,14 +57,22 @@ public class ReportLocalController {
 
     @GetMapping("/report/count")
     @ApiOperation("报告汇总数据")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<ReportCountDTO> getReportCount(Long reportId) {
         return Response.success(reportLocalService.getReportCount(reportId));
     }
 
     @GetMapping("/report/bottleneckInterface/list")
     @ApiOperation("瓶颈接口")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<List<BottleneckInterfaceDTO>> getBottleneckInterfaceList(Long reportId, Integer current,
-        Integer pageSize) {
+                                                                             Integer pageSize) {
         ReportLocalQueryParam queryParam = new ReportLocalQueryParam();
         queryParam.setReportId(reportId);
         initPageParam(queryParam, current, pageSize);
@@ -101,14 +109,22 @@ public class ReportLocalController {
 
     @GetMapping("/report/risk/application")
     @ApiOperation("风险机器左侧应用")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<RiskApplicationCountDTO> getRiskApplicationCount(Long reportId) {
         return Response.success(reportLocalService.listRiskApplication(reportId));
     }
 
     @GetMapping("/report/risk/machine/list")
     @ApiOperation("风险机器右侧列表")
-    public Response<List<RiskMacheineDTO>> getRiskMacheine(Long reportId, String applicationName, Integer current,
-        Integer pageSize) {
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
+    public Response<List<RiskMacheineDTO>> getRiskMachine(Long reportId, String applicationName, Integer current,
+                                                          Integer pageSize) {
         ReportLocalQueryParam queryParam = new ReportLocalQueryParam();
         queryParam.setReportId(reportId);
         queryParam.setApplicationName(applicationName);
@@ -172,6 +188,10 @@ public class ReportLocalController {
 
     @GetMapping("/report/machine/detail")
     @ApiOperation("性能详情")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<MachineDetailDTO> getMachineDetail(Long reportId, String applicationName, String machineIp) {
         return Response.success(reportLocalService.getMachineDetail(reportId, applicationName, machineIp));
     }
@@ -265,6 +285,10 @@ public class ReportLocalController {
 
     @GetMapping("/report/application/list")
     @ApiOperation("容量水位应用列表")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<List<ApplicationDTO>> getApplicationList(Long reportId, String applicationName) {
         if (StringUtils.isBlank(applicationName)) {
             applicationName = null;
@@ -274,6 +298,10 @@ public class ReportLocalController {
 
     @GetMapping("/report/application/trace/failedCount")
     @ApiOperation("请求流量明细失败次数")
+    @AuthVerification(
+            moduleCode = BizOpConstants.ModuleCode.PRESSURE_TEST_REPORT,
+            needAuth = ActionTypeEnum.QUERY
+    )
     public Response<Long> getTraceFailedCount(Long reportId) {
         if (reportId == null) {
             return Response.fail("报告id为空");

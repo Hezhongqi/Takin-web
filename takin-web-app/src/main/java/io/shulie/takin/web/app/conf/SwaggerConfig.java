@@ -16,6 +16,9 @@
 
 package io.shulie.takin.web.app.conf;
 
+import java.time.LocalDate;
+import java.util.function.Predicate;
+
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import io.shulie.takin.web.common.constant.ApiUrls;
 import io.swagger.annotations.Api;
@@ -38,9 +41,6 @@ import springfox.documentation.spring.web.paths.DefaultPathProvider;
 import springfox.documentation.spring.web.paths.Paths;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
-
-import java.time.LocalDate;
-import java.util.function.Predicate;
 
 /**
  * The type Swagger config.
@@ -464,6 +464,25 @@ public class SwaggerConfig {
             .useDefaultResponseMessages(false)
             .apiInfo(apiInfo()).enable(swaggerEnable)
             ;
+    }
+
+    /**
+     * 权限改造
+     * @return
+     */
+    @Bean
+    public Docket api_deptAuth() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .pathProvider(this.pathProvider())
+                .groupName("部门权限改造")
+                .select()
+                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                .paths(getRegex("/api/(dept|role).*"))
+                .build()
+                .directModelSubstitute(LocalDate.class, String.class)
+                .useDefaultResponseMessages(false)
+                .apiInfo(apiInfo()).enable(swaggerEnable)
+                ;
     }
 
 

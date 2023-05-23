@@ -77,7 +77,6 @@ public class ReportDetailOutput extends ContextExt {
     private BigDecimal avgTps;
 
     private BigDecimal maxTps;
-
     private BigDecimal minTps;
 
     @ApiModelProperty(value = "平均RT")
@@ -131,5 +130,10 @@ public class ReportDetailOutput extends ContextExt {
     private String calibrationMessage;
     private List<String> ptlPath;
 
+    @ApiModelProperty("压测报告备注")
+    private String reportRemarks;
+
     private String ptConfig;
+
+    private Long deptId;
 }

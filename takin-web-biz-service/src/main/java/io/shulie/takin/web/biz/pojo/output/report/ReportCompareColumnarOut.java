@@ -1,10 +1,10 @@
 package io.shulie.takin.web.biz.pojo.output.report;
 
-import io.swagger.annotations.ApiModel;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
 
 @Data
 @ApiModel("压测报告比对-柱状图")
@@ -29,4 +29,5 @@ public class ReportCompareColumnarOut implements Serializable {
     public BigDecimal getSuccessRate() {
         return successRate != null ? successRate.setScale(2, BigDecimal.ROUND_HALF_UP) : null;
     }
+
 }

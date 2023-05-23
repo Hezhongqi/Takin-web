@@ -345,9 +345,13 @@ public class ShellScriptManageServiceImpl implements ShellScriptManageService {
         queryParam.setPageSize(input.getPageSize());
         // 脚本类型
         queryParam.setScriptType(1);
-        List<Long> userIdList = WebPluginUtils.getQueryAllowUserIdList();
+        List<Long> userIdList = WebPluginUtils.queryAllowUserIdList();
         if (CollectionUtils.isNotEmpty(userIdList)) {
             queryParam.setUserIdList(userIdList);
+        }
+        List<Long> deptIdList = WebPluginUtils.queryAllowDeptIdList();
+        if (CollectionUtils.isNotEmpty(deptIdList)) {
+            queryParam.setDeptIdList(deptIdList);
         }
         PagingList<ScriptManageDeployResult> scriptManageDeployResults = scriptManageDAO
             .pageQueryRecentScriptManageDeploy(queryParam);
@@ -359,8 +363,8 @@ public class ShellScriptManageServiceImpl implements ShellScriptManageService {
             ScriptManageDeployResult::getUserId).collect(Collectors.toList());
         //用户信息Map key:userId  value:user对象
         Map<Long, UserExt> userMap = WebPluginUtils.getUserMapByIds(userIds);
-        List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
-        List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
+        List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
+        List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
 
         List<ShellScriptManageOutput> outputs = scriptManageDeployResults.getList().stream().map(
             scriptManageDeployResult -> {
@@ -383,6 +387,7 @@ public class ShellScriptManageServiceImpl implements ShellScriptManageService {
                     .map(UserExt::getName)
                     .orElse("");
                 shellScriptManageOutput.setUserName(userName);
+                WebPluginUtils.fillQueryResponse(shellScriptManageOutput);
                 return shellScriptManageOutput;
             }).collect(Collectors.toList());
         setTagList(outputs);

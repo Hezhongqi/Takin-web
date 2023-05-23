@@ -1,5 +1,7 @@
 package io.shulie.takin.web.amdb.api;
 
+import java.util.List;
+
 import com.pamirs.pradar.log.parser.trace.RpcBased;
 import com.pamirs.pradar.log.parser.trace.RpcStack;
 import io.shulie.surge.data.deploy.pradar.link.model.TTrackClickhouseModel;
@@ -11,8 +13,6 @@ import io.shulie.takin.web.amdb.bean.query.trace.TraceLogQueryDTO;
 import io.shulie.takin.web.amdb.bean.query.trace.TraceMetricsRequest;
 import io.shulie.takin.web.amdb.bean.result.trace.EntryTraceInfoDTO;
 import io.shulie.takin.web.amdb.bean.result.trace.TraceMetrics;
-
-import java.util.List;
 
 /**
  * @author shiyajian
@@ -67,5 +67,4 @@ public interface TraceClient {
     String dataCalibration(DataCalibrationDTO dataCalibration);
 
     List<TraceMetrics> getSqlStatements(TraceMetricsRequest traceMetricsRequest);
-
 }

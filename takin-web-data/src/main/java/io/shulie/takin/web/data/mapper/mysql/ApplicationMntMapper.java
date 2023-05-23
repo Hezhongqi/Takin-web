@@ -1,17 +1,12 @@
 package io.shulie.takin.web.data.mapper.mysql;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.pamirs.takin.entity.domain.vo.application.NodeNumParam;
-
-import io.shulie.takin.web.ext.entity.tenant.TenantCommonExt;
 import io.shulie.takin.web.data.model.mysql.ApplicationMntEntity;
 import io.shulie.takin.web.data.param.application.QueryApplicationByUpgradeParam;
 import io.shulie.takin.web.data.param.application.QueryApplicationParam;
@@ -58,7 +53,7 @@ public interface ApplicationMntMapper extends BaseMapper<ApplicationMntEntity> {
     List<ApplicationMntEntity> getAllApplicationByStatus(@Param("statusList") List<Integer> statusList);
 
     List<ApplicationMntEntity> getApplicationMntByUserIdsAndKeyword(@Param("userIds") List<Long> userIds,
-        @Param("keyword") String keyword);
+                                                                    @Param("deptIds") List<Long> deptIds,@Param("keyword") String keyword);
 
     List<ApplicationMntEntity> getAllApplications();
 

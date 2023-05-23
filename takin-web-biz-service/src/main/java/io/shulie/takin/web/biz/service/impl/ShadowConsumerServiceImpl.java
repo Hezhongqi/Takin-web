@@ -150,8 +150,8 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
             lambdaQueryWrapper.eq(ShadowMqConsumerEntity::getStatus,
                 request.getEnabled() ? ShadowConsumerConstants.ENABLE : ShadowConsumerConstants.DISABLE);
         }
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            lambdaQueryWrapper.in(ShadowMqConsumerEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            lambdaQueryWrapper.in(ShadowMqConsumerEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
         }
         List<ShadowConsumerOutput> totalResult;
         lambdaQueryWrapper.eq(ShadowMqConsumerEntity::getApplicationId, request.getApplicationId());
@@ -161,7 +161,7 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
         if (request.getEnabled() == null || BooleanUtil.isFalse(request.getEnabled())) {
             amdbResult = queryAmdbDefaultEntrances(request, application.getApplicationName());
         }
-        totalResult = mergeResult(amdbResult, dbResult);
+        totalResult = mergeResult(amdbResult, dbResult, application.getDeptId());
         totalResult = filterResult(request, totalResult);
         return splitPage(request, totalResult);
     }
@@ -188,7 +188,7 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
     }
 
     private List<ShadowConsumerOutput> mergeResult(List<ShadowMqConsumerOutput> amdbResult,
-        List<ShadowMqConsumerEntity> dbResult) {
+        List<ShadowMqConsumerEntity> dbResult, Long deptId) {
         Map<String, ShadowConsumerOutput> amdbMap = new HashMap<>();
         Map<String, MqConfigTemplateEntity> entityMap = mqConfigTemplateDAO.selectToMapWithNameKey();
         if (CollectionUtils.isNotEmpty(amdbResult)) {
@@ -229,6 +229,7 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
                     response.setIsManual(e.getManualTag() == 1);
                     response.setCanRemove(response.getIsManual());
                     response.setShadowconsumerEnable(String.valueOf(e.getStatus()));
+                    response.setDeptId(deptId);
                     WebPluginUtils.fillQueryResponse(response);
                     return response;
                 })
@@ -664,8 +665,8 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
         // if (StringUtils.isNotBlank(request.getShadowConsumerEnable())) {
         //     lambdaQueryWrapper.eq(ShadowMqConsumerEntity::getStatus, request.getShadowConsumerEnable());
         // }
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            lambdaQueryWrapper.in(ShadowMqConsumerEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            lambdaQueryWrapper.in(ShadowMqConsumerEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
         }
         List<ShadowConsumerOutput> totalResult;
         lambdaQueryWrapper.eq(ShadowMqConsumerEntity::getApplicationId, request.getApplicationId());
@@ -678,7 +679,7 @@ public class ShadowConsumerServiceImpl implements ShadowConsumerService {
         if (StringUtils.isBlank(request.getShadowconsumerEnable()) || Objects.equals(request.getShadowconsumerEnable(), "0")) {
             amdbResult = queryAmdbDefaultEntrances(queryInput, application.getApplicationName());
         }
-        totalResult = mergeResult(amdbResult, dbResult);
+        totalResult = mergeResult(amdbResult, dbResult, application.getDeptId());
         totalResult = filterResult(queryInput, totalResult);
         return splitPage(queryInput, totalResult);
     }

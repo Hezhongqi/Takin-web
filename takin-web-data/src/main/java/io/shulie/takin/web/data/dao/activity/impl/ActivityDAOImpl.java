@@ -152,6 +152,7 @@ public class ActivityDAOImpl implements ActivityDAO, MPUtil<BusinessLinkManageTa
             businessLinkManageTableEntity.setBindBusinessId(param.getBindBusinessId());
         }
         businessLinkManageTableEntity.setPersistence(param.isPersistence());
+        businessLinkManageTableEntity.setDeptId(WebPluginUtils.traceDeptId());
         businessLinkManageTableMapper.insert(businessLinkManageTableEntity);
         param.setLinkId(businessLinkManageTableEntity.getLinkId());
         return businessLinkManageTableEntity.getLinkId();
@@ -337,6 +338,9 @@ public class ActivityDAOImpl implements ActivityDAO, MPUtil<BusinessLinkManageTa
         page.setOrders(Lists.newArrayList(OrderItem.desc("CREATE_TIME")));
 
         LambdaQueryWrapper<BusinessLinkManageTableEntity> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if (param.getDeptId() != null){
+            lambdaQueryWrapper.eq(BusinessLinkManageTableEntity::getDeptId, param.getDeptId());
+        }
         if (StringUtils.isNotBlank(param.getActivityName())) {
             lambdaQueryWrapper.like(BusinessLinkManageTableEntity::getLinkName, param.getActivityName());
         }
@@ -352,8 +356,8 @@ public class ActivityDAOImpl implements ActivityDAO, MPUtil<BusinessLinkManageTa
         if (CollectionUtils.isNotEmpty(param.getUserIdList())) {
             lambdaQueryWrapper.in(BusinessLinkManageTableEntity::getUserId, param.getUserIdList());
         }
-        if (CollectionUtils.isNotEmpty(param.getEntranceList())) {
-            lambdaQueryWrapper.in(BusinessLinkManageTableEntity::getEntrace, param.getEntranceList());
+        if (CollectionUtils.isNotEmpty(param.getDeptIdList())) {
+            lambdaQueryWrapper.in(BusinessLinkManageTableEntity::getDeptId, param.getDeptIdList());
         }
         if(param.getType() != null) {
             lambdaQueryWrapper.eq(BusinessLinkManageTableEntity::getType, param.getType());
@@ -395,6 +399,7 @@ public class ActivityDAOImpl implements ActivityDAO, MPUtil<BusinessLinkManageTa
                 result.setCreateTime(entity.getCreateTime());
                 result.setUpdateTime(entity.getUpdateTime());
                 result.setBusinessDomain(entity.getBusinessDomain());
+                result.setDeptId(entity.getDeptId());
                 result.setCanDelete(entity.getCanDelete());
                 if (entity.getRelatedTechLink() != null) {
                     LinkManageTableEntity linkManageTableEntity = linkMap.get(
@@ -494,6 +499,7 @@ public class ActivityDAOImpl implements ActivityDAO, MPUtil<BusinessLinkManageTa
         r.setIsDeleted(entity.getIsDeleted());
         r.setEntrace(entity.getEntrace());
         r.setUserId(entity.getUserId());
+        r.setDeptId(entity.getDeptId());
         r.setCreateTime(entity.getCreateTime());
         r.setUpdateTime(entity.getUpdateTime());
         r.setBusinessDomain(entity.getBusinessDomain());

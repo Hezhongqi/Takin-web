@@ -659,6 +659,7 @@ public class CloudSceneTaskServiceImpl extends AbstractIndicators implements Clo
     public SceneTryRunTaskStartOutput startTryRun(SceneManageWrapperInput input, List<EnginePluginInput> enginePlugins) {
         Long sceneManageId;
         CloudPluginUtils.fillUserData(input);
+        input.setDeptId(WebPluginUtils.traceDeptId());
         //首先根据脚本实例id构建压测场景名称
         String pressureTestSceneName = SceneManageConstant.getTryRunSceneName(input.getScriptDeployId());
         //根据场景名称查询是否已经存在场景
@@ -1133,6 +1134,7 @@ public class CloudSceneTaskServiceImpl extends AbstractIndicators implements Clo
         //负责人默认启动人
         report.setUserId(input.getIsTiming() ? scene.getUserId() : CloudPluginUtils.getUserId());
         report.setSceneName(scene.getPressureTestSceneName());
+        report.setDeptId(WebPluginUtils.traceDeptId());
 
         if (StringUtils.isNotBlank(scene.getFeatures())) {
             JSONObject features = JsonUtil.parse(scene.getFeatures());
@@ -1189,6 +1191,7 @@ public class CloudSceneTaskServiceImpl extends AbstractIndicators implements Clo
         saveNonTargetNode(scene.getId(), reportId, report.getScriptNodeTree(), businessActivityConfig);
         return report;
     }
+
 
     /**
      * 把节点树中的测试计划、线程组、控制器当作业务活动插入到报告关联的业务活动中

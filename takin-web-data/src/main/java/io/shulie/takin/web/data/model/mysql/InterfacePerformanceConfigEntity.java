@@ -1,5 +1,7 @@
 package io.shulie.takin.web.data.model.mysql;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -7,8 +9,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.shulie.takin.web.data.model.mysql.base.TenantBaseEntity;
 import lombok.Data;
 import lombok.ToString;
-
-import java.util.Date;
 
 /**
  * @author xingchen
@@ -120,6 +120,9 @@ public class InterfacePerformanceConfigEntity extends TenantBaseEntity {
      */
     @TableField(value = "user_id")
     private Long userId;
+
+    @TableField(value = "dept_id")
+    private Long deptId;
 
     /**
      * 修改人

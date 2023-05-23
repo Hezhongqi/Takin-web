@@ -1349,10 +1349,15 @@ public class ScriptManageServiceImpl implements ScriptManageService {
         scriptManageDeployPageQueryParam.setCurrent(scriptManageDeployPageQueryRequest.getCurrent());
         scriptManageDeployPageQueryParam.setPageSize(scriptManageDeployPageQueryRequest.getPageSize());
         scriptManageDeployPageQueryParam.setScriptType(0);
-        List<Long> userIdList = WebPluginUtils.getQueryAllowUserIdList();
+        List<Long> userIdList = WebPluginUtils.queryAllowUserIdList();
         if (CollectionUtils.isNotEmpty(userIdList)) {
             scriptManageDeployPageQueryParam.setUserIdList(userIdList);
         }
+        List<Long> deptIdList = WebPluginUtils.queryAllowDeptIdList();
+        if (CollectionUtils.isNotEmpty(deptIdList)){
+            scriptManageDeployPageQueryParam.setDeptIdList(deptIdList);
+        }
+        scriptManageDeployPageQueryParam.setDeptId(scriptManageDeployPageQueryRequest.getDeptId());
         PagingList<ScriptManageDeployResult> scriptManageDeployResults = scriptManageDAO
             .pageQueryRecentScriptManageDeploy(
                 scriptManageDeployPageQueryParam);
@@ -1365,9 +1370,9 @@ public class ScriptManageServiceImpl implements ScriptManageService {
             .collect(Collectors.toList());
         //用户信息Map key:userId  value:user对象
         Map<Long, UserExt> userMap = WebPluginUtils.getUserMapByIds(userIds);
-        List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
-        List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
-        List<Long> allowDownloadUserIdList = WebPluginUtils.getDownloadAllowUserIdList();
+        List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
+        List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
+        List<Long> allowDownloadUserIdList = WebPluginUtils.downloadAllowUserIdList();
         List<ScriptManageDeployResponse> scriptManageDeployResponses = scriptManageDeployResults.getList().stream()
             .map(scriptManageDeployResult -> {
                 ScriptManageDeployResponse scriptManageDeployResponse = new ScriptManageDeployResponse();

@@ -1,8 +1,8 @@
 package io.shulie.takin.web.amdb.bean.result.application;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * @Author: 南风
@@ -22,5 +22,14 @@ public class ApplicationBizTableDTO implements Serializable {
 
     private String tableUser;
 
+    /**
+     * 有写入操作
+     */
+    private Integer canWrite;
+
+    /**
+     * 有读取操作
+     */
+    private Integer canRead;
 
 }

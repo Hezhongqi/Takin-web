@@ -107,6 +107,7 @@ public class OpsScriptManageServiceImpl implements OpsScriptManageService {
     private OpsScriptFileService opsScriptFileService;
 
     @PostConstruct
+    @Override
     public void init() {
         boolean deployUserEnable = ConfigServerHelper.getBooleanValueByKey(
             ConfigServerKeyEnum.TAKIN_FILE_OPS_SCRIPT_DEPLOY_USER_ENABLE);
@@ -121,7 +122,7 @@ public class OpsScriptManageServiceImpl implements OpsScriptManageService {
     @Override
     public PagingList<OpsScriptVO> page(OpsScriptParam param) {
         PageUtils.clearPageHelper();
-        List<Long> userIdList = WebPluginUtils.getQueryAllowUserIdList();
+        List<Long> userIdList = WebPluginUtils.queryAllowUserIdList();
         LambdaQueryWrapper<OpsScriptManageEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(!CollectionUtils.isEmpty(userIdList), OpsScriptManageEntity::getUserId, userIdList);
         wrapper.orderByDesc(OpsScriptManageEntity::getGmtCreate);

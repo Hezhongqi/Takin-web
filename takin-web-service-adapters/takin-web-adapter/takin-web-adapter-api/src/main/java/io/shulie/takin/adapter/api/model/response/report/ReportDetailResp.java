@@ -132,5 +132,11 @@ public class ReportDetailResp extends ContextExt {
     private String calibrationMessage;
     private List<String> ptlPath;
 
+    @ApiModelProperty("压测报告备注")
+    private String reportRemarks;
+
+    private Long deptId;
+
     private String ptConfig;
+
 }

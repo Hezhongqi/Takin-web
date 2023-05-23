@@ -3,6 +3,8 @@ package io.shulie.takin.adapter.api.model.request.report;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ReportMessageDetailReq extends ReportMessageCodeReq{
 

@@ -19,7 +19,7 @@
     <parent>
         <groupId>io.shulie.takin</groupId>
         <artifactId>takin-web</artifactId>
-        <version>takin-web-5.10.0</version>
+        <version>takin-web-5.10.0.hzbank</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>takin-web-common</artifactId>
@@ -108,6 +108,8 @@
             <scope>compile</scope>
         </dependency>
 
+
+
         <!--takin common 公共模块-->
         <dependency>
             <groupId>io.shulie.takin</groupId>
@@ -132,11 +134,13 @@
             <artifactId>module-pradar-core</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>cn.afterturn</groupId>
             <artifactId>easypoi-annotation</artifactId>
             <version>4.4.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
@@ -187,6 +191,7 @@
             <artifactId>ganymed-ssh2</artifactId>
             <version>262</version>
         </dependency>
+
     </dependencies>
 
 

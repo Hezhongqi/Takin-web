@@ -117,6 +117,7 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
                             manage.setIsAgentRegiste(1);
                             manage.setTenantId(WebPluginUtils.traceTenantId());
                             manage.setEnvCode(WebPluginUtils.traceEnvCode());
+                            manage.setDeptId(applicationDetailResult.getDeptId());
                             batch.add(manage);
                         }
 
@@ -133,6 +134,7 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
                         manage.setIsAgentRegiste(1);
                         manage.setTenantId(WebPluginUtils.traceTenantId());
                         manage.setEnvCode(WebPluginUtils.traceEnvCode());
+                        manage.setDeptId(applicationDetailResult.getDeptId());
                         batch.add(manage);
                     }
 
@@ -165,6 +167,7 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
                 manage.setTenantId(single.getTenantId());
                 manage.setUserId(single.getUserId());
                 manage.setIsAgentRegiste(single.getIsAgentRegiste());
+                manage.setDeptId(single.getDeptId());
                 applicationApiDAO.insertSelective(manage);
             } catch (TakinWebException e1) {
                 log.error(e1.getMessage(), e1);
@@ -229,8 +232,8 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
         ApplicationApiQueryParam manage = new ApplicationApiQueryParam();
         manage.setApplicationName(vo.getApplicationName());
         manage.setApi(vo.getApi());
-
-        List<ApplicationApiManageResult> dataList = applicationApiDAO.selectBySelective(manage, WebPluginUtils.getQueryAllowUserIdList());
+        manage.setDeptId(vo.getDeptId());
+        List<ApplicationApiManageResult> dataList = applicationApiDAO.selectBySelective(manage, WebPluginUtils.queryAllowUserIdList(), WebPluginUtils.queryAllowDeptIdList() );
 
         dataList.sort(Comparator.comparing(ApplicationApiManageResult::getCreateTime).reversed());
         List<ApplicationApiManageResult> pageData =
@@ -240,14 +243,16 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
             ApplicationApiManageVO dto = new ApplicationApiManageVO();
             BeanUtils.copyProperties(data, dto);
             dto.setRequestMethod(data.getMethod());
-            List<Long> allowUpdateUserIdList = WebPluginUtils.getUpdateAllowUserIdList();
+            List<Long> allowUpdateUserIdList = WebPluginUtils.updateAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowUpdateUserIdList)) {
                 dto.setCanEdit(allowUpdateUserIdList.contains(data.getUserId()));
             }
-            List<Long> allowDeleteUserIdList = WebPluginUtils.getDeleteAllowUserIdList();
+            List<Long> allowDeleteUserIdList = WebPluginUtils.deleteAllowUserIdList();
             if (CollectionUtils.isNotEmpty(allowDeleteUserIdList)) {
                 dto.setCanRemove(allowDeleteUserIdList.contains(data.getUserId()));
             }
+            WebPluginUtils.fillQueryResponse(dto);
+
             dtoList.add(dto);
         });
         /*  PageInfo<ApplicationApiManage> pageInfo = new PageInfo<>(pageData);*/
@@ -304,8 +309,11 @@ public class ApplicationApiServiceImpl implements ApplicationApiService {
         createParam.setIsDeleted((byte) 0);
         createParam.setEnvCode(WebPluginUtils.traceEnvCode());
         createParam.setTenantId(WebPluginUtils.traceTenantId());
+        createParam.setDeptId(WebPluginUtils.traceDeptId());
         boolean status = applicationApiDAO.check(vo.getApplicationName(), DictionaryCache.getObjectByParam(HTTP_METHOD_TYPE, Integer.parseInt(vo.getMethod())).getLabel(), vo.getApi());
-        if (status) return Response.fail("重复添加");
+        if (status) {
+            return Response.fail("重复添加");
+        }
         // 把旧的记录删除了，新的再添加
 //        applicationApiDAO.deleteByAppName(vo.getApplicationName());
         applicationApiDAO.insert(createParam);

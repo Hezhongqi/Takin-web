@@ -88,6 +88,7 @@ public class SceneManageDAOImpl
             .eq(SceneManageEntity::getTenantId, CloudPluginUtils.getContext().getTenantId())
             .eq(SceneManageEntity::getEnvCode, CloudPluginUtils.getContext().getEnvCode())
             .in(userIdList.size() > 0, SceneManageEntity::getUserId, userIdList)
+            .in(!CollectionUtils.isEmpty(queryBean.getDeptIdList()), SceneManageEntity::getDeptId, queryBean.getDeptIdList())
             .orderByDesc(SceneManageEntity::getUpdateTime);
         return this.baseMapper.selectList(wrapper);
     }

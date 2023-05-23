@@ -85,4 +85,5 @@ public class ScriptNodeSummaryBean {
     private List<ScriptNodeSummaryBean> children;
 
     private String features;
+
 }

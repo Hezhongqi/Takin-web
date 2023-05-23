@@ -15,12 +15,8 @@
 
 package io.shulie.takin.web.data.dao.application;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -102,6 +98,7 @@ public class ApplicationDAOImpl
         }).collect(Collectors.toList());
     }
 
+    @Override
     public List<ApplicationDetailResult> getApplicationByAppIds(List<Long> appIds) {
         LambdaQueryWrapper<ApplicationMntEntity> query = new LambdaQueryWrapper<>();
         if (appIds != null && appIds.size() > 0) {
@@ -270,11 +267,14 @@ public class ApplicationDAOImpl
     }
 
     @Override
-    public List<ApplicationDetailResult> getApplicationListByUserIds(List<Long> userIdList) {
+    public List<ApplicationDetailResult> getApplicationListByUserIds(List<Long> userIdList, List<Long> deptIdList) {
         List<ApplicationDetailResult> applicationDetailResultList = Lists.newArrayList();
         LambdaQueryWrapper<ApplicationMntEntity> wrapper = new LambdaQueryWrapper<>();
         if (!CollectionUtils.isEmpty(userIdList)) {
             wrapper.in(ApplicationMntEntity::getUserId, userIdList);
+        }
+        if (!CollectionUtils.isEmpty(deptIdList)) {
+            wrapper.in(ApplicationMntEntity::getDeptId, deptIdList);
         }
         List<ApplicationMntEntity> entityList = applicationMntMapper.selectList(wrapper);
         if (CollectionUtils.isEmpty(entityList)) {
@@ -321,6 +321,9 @@ public class ApplicationDAOImpl
         if (StringUtils.isNotBlank(param.getEnvCode())) {
             wrapper.eq(ApplicationMntEntity::getEnvCode, param.getEnvCode());
         }
+        if(StringUtils.isNotBlank(param.getApplicationName())){
+            wrapper.eq(ApplicationMntEntity::getApplicationName, param.getApplicationName());
+        }
         return getApplicationDetailResults(wrapper);
     }
 
@@ -328,8 +331,11 @@ public class ApplicationDAOImpl
     public List<String> getAllApplicationName(ApplicationQueryParam param) {
         LambdaQueryWrapper<ApplicationMntEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.select(ApplicationMntEntity::getApplicationName);
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            wrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            wrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
+        }
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowDeptIdList())) {
+            wrapper.in(ApplicationMntEntity::getDeptId, WebPluginUtils.queryAllowDeptIdList());
         }
         List<ApplicationMntEntity> entities = applicationMntMapper.selectList(wrapper);
         return entities.stream()
@@ -537,8 +543,11 @@ public class ApplicationDAOImpl
         queryWrapper.select(ApplicationMntEntity::getApplicationId,
             ApplicationMntEntity::getApplicationName, ApplicationMntEntity::getNodeNum,
             ApplicationMntEntity::getAgentVersion);
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
+        }
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowDeptIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getDeptId, WebPluginUtils.queryAllowDeptIdList());
         }
         List<ApplicationMntEntity> applicationMntEntities = applicationMntMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(applicationMntEntities)) {
@@ -557,10 +566,10 @@ public class ApplicationDAOImpl
     }
 
     @Override
-    public List<ApplicationDetailResult> getApplicationMntByUserIdsAndKeyword(List<Long> userIds, String keyword) {
+    public List<ApplicationDetailResult> getApplicationMntByUserIdsAndKeyword(List<Long> userIds, List<Long> deptIdList, String keyword) {
 
         List<ApplicationMntEntity> allApplications = applicationMntMapper.getApplicationMntByUserIdsAndKeyword(userIds,
-            keyword);
+                deptIdList, keyword);
         if (CollectionUtils.isEmpty(allApplications)) {
             return Lists.newArrayList();
         }
@@ -581,8 +590,11 @@ public class ApplicationDAOImpl
         if (CollectionUtils.isNotEmpty(queryParam.getApplicationIds())) {
             queryWrapper.in(ApplicationMntEntity::getApplicationId, queryParam.getApplicationIds());
         }
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
+        }
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowDeptIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getDeptId, WebPluginUtils.queryAllowDeptIdList());
         }
         queryWrapper.orderByDesc(ApplicationMntEntity::getApplicationId);
         if (queryParam.getPageSize() > 0) {
@@ -660,8 +672,11 @@ public class ApplicationDAOImpl
     @Override
     public Long getApplicationCount() {
         LambdaQueryWrapper<ApplicationMntEntity> queryWrapper = new LambdaQueryWrapper<>();
-        if (CollectionUtils.isNotEmpty(WebPluginUtils.getQueryAllowUserIdList())) {
-            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.getQueryAllowUserIdList());
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowUserIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getUserId, WebPluginUtils.queryAllowUserIdList());
+        }
+        if (CollectionUtils.isNotEmpty(WebPluginUtils.queryAllowDeptIdList())) {
+            queryWrapper.in(ApplicationMntEntity::getDeptId, WebPluginUtils.queryAllowDeptIdList());
         }
         return applicationMntMapper.selectCount(queryWrapper);
     }

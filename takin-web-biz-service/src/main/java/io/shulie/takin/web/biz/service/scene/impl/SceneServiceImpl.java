@@ -352,6 +352,7 @@ public class SceneServiceImpl implements SceneService {
         SceneCreateParam sceneCreateParam = new SceneCreateParam();
         sceneCreateParam.setSceneName(testName);
         sceneCreateParam.setLinkRelateNum(0);
+        sceneCreateParam.setDeptId(WebPluginUtils.traceDeptId());
         List<ScriptNode> saveNode = new ArrayList<>(data);
         PtsParseJmxToObjectTools.removeSamplerNodeChildren(saveNode);
         sceneCreateParam.setScriptJmxNode(JsonHelper.bean2Json(saveNode));
@@ -658,8 +659,10 @@ public class SceneServiceImpl implements SceneService {
         queryParam.setSceneName(flowName == null ? null : flowName.replace("%", "\\%").replace("-", "\\-").replace("_", "\\_"));
         queryParam.setCurrent(queryRequest.getCurrent());
         queryParam.setPageSize(queryRequest.getPageSize());
+        queryParam.setDeptId(queryRequest.getDeptId());
         WebPluginUtils.fillQueryParam(queryParam);
         queryParam.setIgnoreType(SceneTypeEnum.PERFORMANCE_AUTO_SCENE.getType());
+        queryParam.setQueryGmtModified(queryRequest.getQueryGmtModified());
 
         PagingList<SceneResult> pageList = sceneDao.selectPageList(queryParam);
         List<BusinessFlowListResponse> responses = LinkManageConvert.INSTANCE.ofSceneResultList(pageList.getList());
@@ -672,6 +675,7 @@ public class SceneServiceImpl implements SceneService {
                 if (user != null) {
                     r.setUserName(user.getName());
                 }
+                WebPluginUtils.fillQueryResponse(r);
             });
         }
         return PagingList.of(responses, pageList.getTotal());
@@ -702,6 +706,9 @@ public class SceneServiceImpl implements SceneService {
         wrapper.orderByDesc(SceneEntity::getId);
         if (CollectionUtils.isNotEmpty(queryParam.getUserIdList())) {
             wrapper.in(SceneEntity::getUserId, queryParam.getUserIdList());
+        }
+        if (CollectionUtils.isNotEmpty(queryParam.getDeptIdList())){
+            wrapper.in(SceneEntity::getDeptId, queryParam.getDeptIdList());
         }
         return sceneMapper.selectList(wrapper);
     }

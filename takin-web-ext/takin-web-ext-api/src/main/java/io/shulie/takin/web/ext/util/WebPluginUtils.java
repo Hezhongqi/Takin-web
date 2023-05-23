@@ -167,7 +167,7 @@ public class WebPluginUtils {
             userIds = userIds.stream().filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
-            Map<Long, UserExt> userMap = userApi.getUserMapByIds(userIds);
+            Map<Long, UserExt> userMap = userApi.getUserMap(userIds);
             if (null != userMap) {
                 return userMap;
             }
@@ -224,6 +224,13 @@ public class WebPluginUtils {
         return null;
     }
 
+    public static Long traceDeptId(){
+        if (userApi != null) {
+            return userApi.traceDeptId();
+        }
+        return null;
+    }
+
     public static Class<?> getClassByName(String className) {
         try {
             // 先扫描用户插件
@@ -253,34 +260,86 @@ public class WebPluginUtils {
      *
      * @return -
      */
-    public static List<Long> getQueryAllowUserIdList() {
+    public static List<Long> queryAllowUserIdList() {
         if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getQueryAllowUserIdList();
+            return dataAuthApi.queryAllowUserIdList();
         }
         return Lists.newArrayList();
     }
 
-    public static List<Long> getUpdateAllowUserIdList() {
+    public static List<Long> updateAllowUserIdList() {
         if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getUpdateAllowUserIdList();
+            return dataAuthApi.updateAllowUserIdList();
         }
         return Lists.newArrayList();
     }
 
-    public static List<Long> getDeleteAllowUserIdList() {
+    public static List<Long> deleteAllowUserIdList() {
         if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getDeleteAllowUserIdList();
+            return dataAuthApi.deleteAllowUserIdList();
         }
         return Lists.newArrayList();
     }
 
-    public static List<Long> getDownloadAllowUserIdList() {
+    public static List<Long> enableDisableAllowUserIdList(){
         if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getDownloadAllowUserIdList();
+            return dataAuthApi.enableDisableAllowUserIdList();
         }
         return Lists.newArrayList();
     }
-	
+
+    public static List<Long> startStopAllowUserIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.startStopAllowUserIdList();
+        }
+        return Lists.newArrayList();
+    }
+
+    public static List<Long> downloadAllowUserIdList() {
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.downloadAllowUserIdList();
+        }
+        return Lists.newArrayList();
+    }
+
+    public static List<Long> queryAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.queryAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+
+    public static List<Long> updateAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.updateAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+    public static List<Long> deleteAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.deleteAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+    public static List<Long> enableDisableAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.enableDisableAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+    public static List<Long> startStopAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.startStopAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+    public static List<Long> downloadAllowDeptIdList(){
+        if (Objects.nonNull(dataAuthApi)) {
+            return dataAuthApi.downloadAllowDeptIdList();
+        }
+        return Lists.newArrayList();
+    }
+
 	/**
      * 返回租户id
      *
@@ -294,26 +353,19 @@ public class WebPluginUtils {
         }
         return CUSTOMER_ID;
     }
-	
-    public static List<Long> getStartStopAllowUserIdList() {
-        if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getStartStopAllowUserIdList();
-        }
-        return Lists.newArrayList();
-    }
-
-    public static List<Long> getEnableDisableAllowUserIdList() {
-        if (Objects.nonNull(dataAuthApi)) {
-            return dataAuthApi.getEnableDisableAllowUserIdList();
-        }
-        return Lists.newArrayList();
-    }
 
     public static boolean validateAdmin() {
         if (Objects.nonNull(dataAuthApi)) {
             return userAuthExtApi.validateAdmin();
         }
         return false;
+    }
+
+    public static boolean validateAgentAuth(String userAppKey, String tenantAppKey, String envCode, String userIdHeader, String agentExpand){
+        if (Objects.nonNull(dataAuthApi)) {
+            return userAuthExtApi.validateAgentAuth(userAppKey,tenantAppKey,envCode, userIdHeader,agentExpand);
+        }
+        return true;
     }
     //********************************用户权限模块**********************************//
 
@@ -732,6 +784,9 @@ public class WebPluginUtils {
         ext.setEnvCode(traceEnvCode());
         ext.setTenantAppKey(traceTenantAppKey());
         ext.setTenantCode(traceTenantCode());
+        if (userApi != null){
+            ext.setSource(userApi.traceSource());
+        }
         return ext;
     }
     //********************************http线程上下文模块**********************************//

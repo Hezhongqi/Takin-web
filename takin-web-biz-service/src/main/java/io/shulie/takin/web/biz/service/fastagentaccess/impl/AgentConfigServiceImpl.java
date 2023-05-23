@@ -37,6 +37,7 @@ import io.shulie.takin.web.common.enums.fastagentaccess.AgentConfigEffectMechani
 import io.shulie.takin.web.common.enums.fastagentaccess.AgentConfigTypeEnum;
 import io.shulie.takin.web.common.enums.fastagentaccess.AgentConfigValueTypeEnum;
 import io.shulie.takin.web.common.util.AppCommonUtil;
+import io.shulie.takin.web.common.util.RedisHelper;
 import io.shulie.takin.web.data.dao.application.ApplicationDAO;
 import io.shulie.takin.web.data.dao.fastagentaccess.AgentConfigDAO;
 import io.shulie.takin.web.data.param.fastagentaccess.AgentConfigQueryParam;
@@ -119,6 +120,7 @@ public class AgentConfigServiceImpl implements AgentConfigService, CacheConstant
             })
             .collect(Collectors.toList());
         agentConfigDAO.batchInsert(createAgentConfigParams);
+        this.cacheEvict(CACHE_KEY_AGENT_CONFIG);
     }
 
     @Override
@@ -130,10 +132,10 @@ public class AgentConfigServiceImpl implements AgentConfigService, CacheConstant
 
     @Override
     public List<String> getAllApplication(String keyword) {
-        List<Long> userIdList = WebPluginUtils.getQueryAllowUserIdList();
+        List<Long> userIdList = WebPluginUtils.queryAllowUserIdList();
+        List<Long> deptIdList = WebPluginUtils.queryAllowDeptIdList();
         List<ApplicationDetailResult> applicationMntList = applicationDAO.getApplicationMntByUserIdsAndKeyword(
-            userIdList,
-            keyword);
+            userIdList, deptIdList, keyword);
         return applicationMntList.stream().map(ApplicationDetailResult::getApplicationName).collect(
             Collectors.toList());
     }
@@ -553,6 +555,13 @@ public class AgentConfigServiceImpl implements AgentConfigService, CacheConstant
     private String getOperator() {
         UserExt userExt = WebPluginUtils.traceUser();
         return userExt == null ? LoginConstant.DEFAULT_OPERATOR : userExt.getName();
+    }
+
+    private void cacheEvict(String keyPre){
+        Set<String> keys = RedisHelper.keys(keyPre + "*");
+        if (!CollectionUtils.isEmpty(keys)){
+            keys.forEach(RedisHelper::delete);
+        }
     }
 
 }

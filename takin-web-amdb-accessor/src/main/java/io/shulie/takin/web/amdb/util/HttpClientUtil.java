@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
@@ -222,7 +221,7 @@ public class HttpClientUtil {
                     log.error(e1.getMessage());
                 }
             } else {
-                log.error("error++,{}", conn.getResponseMessage());
+                log.error("error++,url:{},responseCode:{},responseMessage:{}", inputUrl, conn.getResponseCode(), conn.getResponseMessage());
             }
         } catch (Exception e) {
             log.error(e.getMessage());

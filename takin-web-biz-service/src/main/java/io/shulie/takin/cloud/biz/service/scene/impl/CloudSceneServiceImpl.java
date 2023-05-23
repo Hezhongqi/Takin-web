@@ -1,22 +1,38 @@
 package io.shulie.takin.cloud.biz.service.scene.impl;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.pamirs.takin.cloud.entity.dao.scene.manage.TSceneBusinessActivityRefMapper;
 import com.pamirs.takin.cloud.entity.domain.entity.scene.manage.SceneBusinessActivityRef;
+import io.shulie.takin.adapter.api.model.response.scenemanage.OldGoalModel;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneDetailV2Response;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.BasicInfo;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.Content;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.DataValidation;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.File;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.Goal;
+import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.MonitoringGoal;
 import io.shulie.takin.cloud.biz.service.scene.CloudSceneManageService;
 import io.shulie.takin.cloud.biz.service.scene.CloudSceneService;
 import io.shulie.takin.cloud.common.constants.SceneManageConstant;
@@ -34,17 +50,9 @@ import io.shulie.takin.cloud.data.model.mysql.SceneScriptRefEntity;
 import io.shulie.takin.cloud.data.model.mysql.SceneSlaRefEntity;
 import io.shulie.takin.cloud.ext.content.enginecall.PtConfigExt;
 import io.shulie.takin.cloud.ext.content.script.ScriptNode;
-import io.shulie.takin.adapter.api.model.response.scenemanage.OldGoalModel;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneDetailV2Response;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.BasicInfo;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.Content;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.DataValidation;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.File;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.Goal;
-import io.shulie.takin.adapter.api.model.response.scenemanage.SceneRequest.MonitoringGoal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import io.shulie.takin.web.ext.util.WebPluginUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -130,7 +138,9 @@ public class CloudSceneServiceImpl implements CloudSceneService {
             }
             // 1.   创建场景
             int updateRows = updateStepScene(in.getBasicInfo(), in.getConfig(), in.getAnalysisResult(), in.getDataValidation());
-            if (updateRows == 0) {return false;}
+            if (updateRows == 0) {
+                return false;
+            }
             if (updateRows == 1) {
                 long sceneId = in.getBasicInfo().getSceneId();
                 // 2. 更新场景&业务活动关联关系
@@ -421,6 +431,7 @@ public class CloudSceneServiceImpl implements CloudSceneService {
         sceneEntity.setUserId(CloudPluginUtils.getUserId());
         sceneEntity.setEnvCode(CloudPluginUtils.getEnvCode());
         sceneEntity.setTenantId(CloudPluginUtils.getTenantId());
+        sceneEntity.setDeptId(WebPluginUtils.traceDeptId());
         // 执行数据库操作
         sceneManageMapper.insert(sceneEntity);
         // 回填自增主键
@@ -539,6 +550,7 @@ public class CloudSceneServiceImpl implements CloudSceneService {
             if (StrUtil.isNotBlank(destPath)) {
                 String filePath = destPath + fileName;
                 if (!filePath.equals(t.getPath())) {
+                    //指定文件路径和名称创建一个文件
                     FileUtil.touch(filePath);
                     FileUtil.copy(t.getPath(), filePath, true);
                 }
@@ -581,7 +593,7 @@ public class CloudSceneServiceImpl implements CloudSceneService {
                     put(SceneManageConstant.COMPARE_VALUE, mGoal.getFormulaNumber());
                     put(SceneManageConstant.COMPARE_TYPE, mGoal.getFormulaSymbol());
                     put(SceneManageConstant.EVENT, mGoal.getType() == 0 ?
-                        SceneManageConstant.EVENT_DESTORY : SceneManageConstant.EVENT_WARN);
+                            SceneManageConstant.EVENT_DESTORY : SceneManageConstant.EVENT_WARN);
                     put(SceneManageConstant.ACHIEVE_TIMES, mGoal.getNumberOfIgnore());
                 }};
                 setSceneId(sceneId);

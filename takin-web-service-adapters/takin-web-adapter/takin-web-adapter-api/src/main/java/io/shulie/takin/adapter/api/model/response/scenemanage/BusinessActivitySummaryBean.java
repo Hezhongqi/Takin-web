@@ -63,5 +63,6 @@ public class BusinessActivitySummaryBean {
     private Integer passFlag;
 
     private String features;
+
 }
 
