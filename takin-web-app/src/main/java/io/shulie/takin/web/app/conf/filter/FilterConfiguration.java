@@ -23,13 +23,13 @@ public class FilterConfiguration {
         return registration;
     }
 
-    @Bean
-    public FilterRegistrationBean<LogTraceIdFilter> logTraceIdFilter() {
-        FilterRegistrationBean<LogTraceIdFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new LogTraceIdFilter());
-        registrationBean.addUrlPatterns("/*");
-        registrationBean.setOrder(0);
-        registrationBean.setName("logTraceIdFilter");
-        return registrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<LogTraceIdFilter> logTraceIdFilter() {
+//        FilterRegistrationBean<LogTraceIdFilter> registrationBean = new FilterRegistrationBean<>();
+//        registrationBean.setFilter(new LogTraceIdFilter());
+//        registrationBean.addUrlPatterns("/*");
+//        registrationBean.setOrder(0);
+//        registrationBean.setName("logTraceIdFilter");
+//        return registrationBean;
+//    }
 }
